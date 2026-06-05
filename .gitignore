@@ -3,6 +3,12 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+## Eclipse ##
+bin/
+.classpath
+.project
+.settings/
+
 # files to be ignored
 .idea/
 *.iml
