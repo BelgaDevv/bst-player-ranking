@@ -5,16 +5,21 @@ public class Ranking {
 
 	private Node root;
 
-	public Ranking(Node root) {
+	public Ranking() {
 		this.root = null;
 	}
 
 	// ==========================================
     // 1. INSERIR JOGADOR
     // ==========================================
-	public void insert(Player newPlayer) {
+	public boolean insert(Player newPlayer) {
+		if (searchByScore(newPlayer.getScore()) != null) {
+			return false;
+		}
+
 		Node newNode = new Node(newPlayer);
 		this.root = insertRecursive(this.root, newNode);
+		return true;
 	}
 
 	private Node insertRecursive(Node current, Node newNode) {
@@ -57,14 +62,18 @@ public class Ranking {
 	// ==========================================
     // 3. REMOVER JOGADOR
     // ==========================================
-	public void remove(int scoreToRemove) {
+	public boolean remove(int scoreToRemove) {
+		if (searchByScore(scoreToRemove) == null) {
+			return false;
+		}
+
 		this.root = removeRecursive(this.root, scoreToRemove);
+		return true;
 	}
 
 	private Node removeRecursive(Node current, int scoreToRemove) {
 
 		if (current == null) {
-			System.out.println("Pontuação não encontrada no ranking.");
 			return null;
 		}
 
@@ -97,7 +106,32 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 4. MOSTRAR RANKING EM ORDEM CRESCENTE
+    // 4. ATUALIZAR JOGADOR
+    // ==========================================
+	public boolean update(int originalScore, Player updatedPlayer) {
+		Player currentPlayer = searchByScore(originalScore);
+		if (currentPlayer == null) {
+			return false;
+		}
+
+		if (originalScore == updatedPlayer.getScore()) {
+			currentPlayer.setName(updatedPlayer.getName());
+			currentPlayer.setLevel(updatedPlayer.getLevel());
+			currentPlayer.setTime(updatedPlayer.getTime());
+			return true;
+		}
+
+		if (searchByScore(updatedPlayer.getScore()) != null) {
+			return false;
+		}
+
+		this.root = removeRecursive(this.root, originalScore);
+		insert(updatedPlayer);
+		return true;
+	}
+
+	// ==========================================
+    // 5. MOSTRAR RANKING EM ORDEM CRESCENTE
     // ==========================================
 	public void displayRanking() {
 		if (this.root == null) {
@@ -116,7 +150,7 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 5. MOSTRAR MAIOR PONTUAÇÃO
+    // 6. MOSTRAR MAIOR PONTUAÇÃO
     // ==========================================
 	public Player getHighestScore() {
 		if (this.root == null) {
@@ -134,7 +168,7 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 6. MOSTRAR MENOR PONTUAÇÃO
+    // 7. MOSTRAR MENOR PONTUAÇÃO
     // ==========================================
 	public Player getLowestScore() {
 		if (this.root == null) {
@@ -152,7 +186,7 @@ public class Ranking {
 	}
 	
 	// ==========================================
-    // 7. MOSTRAR QUANTIDADE DE JOGADORES
+    // 8. MOSTRAR QUANTIDADE DE JOGADORES
     // ==========================================
 	public int countPlayers() {
 		return countPlayersRecursive(this.root);
@@ -165,5 +199,64 @@ public class Ranking {
 		return 1
 				+ countPlayersRecursive(current.getLeft())
 				+ countPlayersRecursive(current.getRight());
+	}
+
+	// ==========================================
+    // 9. MOSTRAR ALTURA DA ÁRVORE
+    // ==========================================
+	public int getHeight() {
+		return getHeightRecursive(this.root);
+	}
+
+	private int getHeightRecursive(Node current) {
+		if (current == null) {
+			return 0;
+		}
+
+		int leftHeight = getHeightRecursive(current.getLeft());
+		int rightHeight = getHeightRecursive(current.getRight());
+
+		if (leftHeight > rightHeight) {
+			return leftHeight + 1;
+		}
+		return rightHeight + 1;
+	}
+
+	// ==========================================
+    // 10. MOSTRAR RANKING EM PRÉ-ORDEM
+    // ==========================================
+	public void displayPreOrder() {
+		if (this.root == null) {
+			System.out.println("O ranking está vazio.");
+			return;
+		}
+		printPreOrder(this.root);
+	}
+
+	private void printPreOrder(Node current) {
+		if (current != null) {
+			System.out.println(current.getPlayer());
+			printPreOrder(current.getLeft());
+			printPreOrder(current.getRight());
+		}
+	}
+
+	// ==========================================
+    // 11. MOSTRAR RANKING EM PÓS-ORDEM
+    // ==========================================
+	public void displayPostOrder() {
+		if (this.root == null) {
+			System.out.println("O ranking está vazio.");
+			return;
+		}
+		printPostOrder(this.root);
+	}
+
+	private void printPostOrder(Node current) {
+		if (current != null) {
+			printPostOrder(current.getLeft());
+			printPostOrder(current.getRight());
+			System.out.println(current.getPlayer());
+		}
 	}
 }
