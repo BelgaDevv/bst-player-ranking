@@ -1,12 +1,10 @@
 package entity;
 
-//classe que cria o nó manual.
-//Ela recebe o objeto Player inteiro no construtor e possui os ponteiros de amarração.
 public class Node {
 
-	private Player player; // O nó carrega o objeto Player inteiro aqui dentro
-	private Node left; // Ponteiro para o nó da esquerda
-	private Node right; // Ponteiro para o nó da direita
+	private Player player;
+	private Node left;
+	private Node right;
 
 	public Node(Player player) {
 		this.player = player;
@@ -14,7 +12,7 @@ public class Node {
 		this.right = null;
 	}
 	
-	// Getters e Setters para o nó conseguir se conectar
+
 	public Player getPlayer() {
 		return player;
 	}

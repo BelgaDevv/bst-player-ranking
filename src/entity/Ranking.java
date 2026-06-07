@@ -1,6 +1,8 @@
 package entity;
 
-//ranking entity é a propria árvore binária, ou seja aqui os dados serão estruturados
+import entity.Node;
+import entity.Player;
+
 public class Ranking {
 
 	private Node root;
@@ -10,40 +12,40 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 1. INSERIR JOGADOR
-    // ==========================================
+	// 1. INSERT PLAYER
+	// ==========================================
 	public boolean insert(Player newPlayer) {
 		if (searchByScore(newPlayer.getScore()) != null) {
 			return false;
 		}
 
 		Node newNode = new Node(newPlayer);
-		this.root = insertRecursive(this.root, newNode);
+		this.root = insert(this.root, newNode);
 		return true;
 	}
 
-	private Node insertRecursive(Node current, Node newNode) {
+	private Node insert(Node current, Node newNode) {
 		if (current == null) {
 			return newNode;
 		}
 
 		if (newNode.getPlayer().getScore() < current.getPlayer().getScore()) {
-			current.setLeft(insertRecursive(current.getLeft(), newNode));
+			current.setLeft(insert(current.getLeft(), newNode));
 		} else {
-			current.setRight(insertRecursive(current.getRight(), newNode));
+			current.setRight(insert(current.getRight(), newNode));
 		}
 
 		return current;
 	}
 
 	// ==========================================
-    // 2. BUSCAR JOGADOR PELA PONTUAÇÃO
-    // ==========================================
+	// 2. SEARCH PLAYER BY SCORE
+	// ==========================================
 	public Player searchByScore(int scoreToFind) {
-		return searchRecursive(this.root, scoreToFind);
+		return search(this.root, scoreToFind);
 	}
 
-	private Player searchRecursive(Node current, int scoreToFind) {
+	private Player search(Node current, int scoreToFind) {
 		if (current == null) {
 			return null;
 		}
@@ -53,34 +55,34 @@ public class Ranking {
 		}
 
 		if (scoreToFind < current.getPlayer().getScore()) {
-			return searchRecursive(current.getLeft(), scoreToFind);
+			return search(current.getLeft(), scoreToFind);
 		}
 
-		return searchRecursive(current.getRight(), scoreToFind);
+		return search(current.getRight(), scoreToFind);
 	}
 
 	// ==========================================
-    // 3. REMOVER JOGADOR
-    // ==========================================
+	// 3. REMOVE PLAYER
+	// ==========================================
 	public boolean remove(int scoreToRemove) {
 		if (searchByScore(scoreToRemove) == null) {
 			return false;
 		}
 
-		this.root = removeRecursive(this.root, scoreToRemove);
+		this.root = remove(this.root, scoreToRemove);
 		return true;
 	}
 
-	private Node removeRecursive(Node current, int scoreToRemove) {
+	private Node remove(Node current, int scoreToRemove) {
 
 		if (current == null) {
 			return null;
 		}
 
 		if (scoreToRemove < current.getPlayer().getScore()) {
-			current.setLeft(removeRecursive(current.getLeft(), scoreToRemove));
+			current.setLeft(remove(current.getLeft(), scoreToRemove));
 		} else if (scoreToRemove > current.getPlayer().getScore()) {
-			current.setRight(removeRecursive(current.getRight(), scoreToRemove));
+			current.setRight(remove(current.getRight(), scoreToRemove));
 		}
 
 		else {
@@ -97,17 +99,22 @@ public class Ranking {
 
 			Node successor = findMinimum(current.getRight());
 
-			current.setPlayer(successor.getPlayer());
 
-			current.setRight(removeRecursive(current.getRight(), successor.getPlayer().getScore()));
+			Player successorData = successor.getPlayer();
+
+
+			current.setRight(remove(current.getRight(), successorData.getScore()));
+
+
+			current.setPlayer(successorData);
 		}
 
 		return current;
 	}
 
 	// ==========================================
-    // 4. ATUALIZAR JOGADOR
-    // ==========================================
+	// 4. UPDATE PLAYER
+	// ==========================================
 	public boolean update(int originalScore, Player updatedPlayer) {
 		Player currentPlayer = searchByScore(originalScore);
 		if (currentPlayer == null) {
@@ -125,14 +132,18 @@ public class Ranking {
 			return false;
 		}
 
-		this.root = removeRecursive(this.root, originalScore);
-		insert(updatedPlayer);
+
+		this.root = remove(this.root, originalScore);
+
+
+		Player cleanPlayer = new Player(updatedPlayer.getLevel(), updatedPlayer.getName(), updatedPlayer.getScore(), updatedPlayer.getTime());
+		insert(cleanPlayer);
 		return true;
 	}
 
 	// ==========================================
-    // 5. MOSTRAR RANKING EM ORDEM CRESCENTE
-    // ==========================================
+	// 5. SHOW RANKING IN ASCENDING ORDER
+	// ==========================================
 	public void displayRanking() {
 		if (this.root == null) {
 			System.out.println("O ranking está vazio.");
@@ -150,8 +161,8 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 6. MOSTRAR MAIOR PONTUAÇÃO
-    // ==========================================
+	// 6. MOSTRAR MAIOR PONTUAÇÃO
+	// ==========================================
 	public Player getHighestScore() {
 		if (this.root == null) {
 			return null;
@@ -159,7 +170,6 @@ public class Ranking {
 		return findMaximum(this.root).getPlayer();
 	}
 
-	 // Método auxiliar recursivo para encontrar o maior valor de uma subárvore
 	private Node findMaximum(Node current) {
 		if (current.getRight() == null) {
 			return current;
@@ -168,53 +178,52 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 7. MOSTRAR MENOR PONTUAÇÃO
-    // ==========================================
+	// 7. SHOW LOWEST SCORE
+	// ==========================================
 	public Player getLowestScore() {
 		if (this.root == null) {
 			return null;
 		}
 		return findMinimum(this.root).getPlayer();
 	}
-	
-	// Método auxiliar recursivo para encontrar o menor valor de uma subárvore
+
 	private Node findMinimum(Node current) {
 		if (current.getLeft() == null) {
 			return current;
 		}
 		return findMinimum(current.getLeft());
 	}
-	
+
 	// ==========================================
-    // 8. MOSTRAR QUANTIDADE DE JOGADORES
-    // ==========================================
+	// 8. SHOW NUMBER OF PLAYERS
+	// ==========================================
 	public int countPlayers() {
-		return countPlayersRecursive(this.root);
+		return countPlayers(this.root);
 	}
-	
-	private int countPlayersRecursive(Node current) {
+
+	private int countPlayers(Node current) {
 		if (current == null) {
 			return 0;
 		}
 		return 1
-				+ countPlayersRecursive(current.getLeft())
-				+ countPlayersRecursive(current.getRight());
+				+ countPlayers(current.getLeft())
+				+ countPlayers(current.getRight());
 	}
 
 	// ==========================================
-    // 9. MOSTRAR ALTURA DA ÁRVORE
-    // ==========================================
+	// 9. SHOW TREE SIZE
+	// ==========================================
 	public int getHeight() {
-		return getHeightRecursive(this.root);
+		return getHeight(this.root);
 	}
 
-	private int getHeightRecursive(Node current) {
+	private int getHeight(Node current) {
 		if (current == null) {
 			return 0;
 		}
 
-		int leftHeight = getHeightRecursive(current.getLeft());
-		int rightHeight = getHeightRecursive(current.getRight());
+		int leftHeight = getHeight(current.getLeft());
+		int rightHeight = getHeight(current.getRight());
 
 		if (leftHeight > rightHeight) {
 			return leftHeight + 1;
@@ -223,8 +232,8 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 10. MOSTRAR RANKING EM PRÉ-ORDEM
-    // ==========================================
+	// 10. SHOW RANKING IN PRE-ORDER
+	// ==========================================
 	public void displayPreOrder() {
 		if (this.root == null) {
 			System.out.println("O ranking está vazio.");
@@ -242,8 +251,8 @@ public class Ranking {
 	}
 
 	// ==========================================
-    // 11. MOSTRAR RANKING EM PÓS-ORDEM
-    // ==========================================
+	// 11. SHOW RANKING IN POST-ORDER
+	// ==========================================
 	public void displayPostOrder() {
 		if (this.root == null) {
 			System.out.println("O ranking está vazio.");

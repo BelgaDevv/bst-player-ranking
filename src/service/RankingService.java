@@ -3,8 +3,7 @@ package service;
 import entity.Player;
 import entity.Ranking;
 
-//ranking service gerencia as regras de negócio e orquestra os fluxos do ranking,
-//servindo de ponte entre a interface (Main) e a estruturação de dados (Ranking Entity).
+
 public class RankingService {
 
 	private Ranking ranking;

@@ -1,6 +1,6 @@
 package entity;
 
-//player entity guarda os atributos dos usuarios
+
 public class Player {
 	
 	private String name;
@@ -47,7 +47,7 @@ public class Player {
 		this.time = time;
 	}
 
-	// toString pra poder retornar os dados do jogador no main
+
 	@Override
 	public String toString() {
 	    return "Nome: " + name +
